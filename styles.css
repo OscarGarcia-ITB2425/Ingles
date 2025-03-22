@@ -1,0 +1,225 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+:root {
+    --dark-blue: #1a2a3a;
+    --light-blue: #3498db;
+    --white: #ffffff;
+    --light-gray: #f5f7fa;
+    --success: #4cd964;
+    --error: #ff3b30;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--dark-blue);
+    color: var(--white);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    line-height: 1.5;
+}
+
+.app-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: var(--dark-blue);
+    padding: 2rem 4rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+.game-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+#loading {
+    font-size: 1.5rem;
+    color: var(--white);
+    text-align: center;
+    margin: 3rem 0;
+    letter-spacing: 1px;
+    position: relative;
+}
+
+#loading:after {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--white);
+    margin-left: 4px;
+    animation: blink 1.4s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+#word-container {
+    font-size: 4rem;
+    font-weight: 600;
+    padding: 2rem 3rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    margin-bottom: 3rem;
+    min-width: 300px;
+    text-align: center;
+    letter-spacing: 1px;
+    transition: transform 0.3s ease;
+}
+
+#word-container:hover {
+    transform: translateY(-5px);
+}
+
+.interaction-area {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 2rem;
+}
+
+input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--dark-blue);
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+
+button {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    background-color: var(--light-blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+
+button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+#result {
+    font-size: 1.3rem;
+    margin: 1.5rem 0;
+    padding: 1rem 2rem;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.correct {
+    color: var(--success);
+}
+
+.incorrect {
+    color: var(--error);
+}
+
+#score {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--light-blue);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+footer {
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: auto;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+footer p {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    header {
+        padding: 1.5rem;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .game-section {
+        padding: 2rem 1rem;
+    }
+
+    #word-container {
+        font-size: 3rem;
+        padding: 1.5rem;
+        min-width: 250px;
+    }
+
+    .interaction-area {
+        flex-direction: column;
+    }
+
+    input, button {
+        width: 100%;
+    }
+}
