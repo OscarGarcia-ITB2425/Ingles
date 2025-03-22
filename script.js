@@ -1,6 +1,7 @@
 let words = [];
 let currentWord;
 let score = 0;
+let isEnglishToSpanish = true; // Estado del modo de traducción
 
 // Cargar el JSON desde la carpeta Data
 fetch('Data/palabras_igles.json')
@@ -28,7 +29,12 @@ function initGame() {
     const randomIndex = Math.floor(Math.random() * words.length);
     currentWord = words[randomIndex];
 
-    document.getElementById('word-container').textContent = currentWord.english;
+    // Mostrar palabra según el modo seleccionado
+    const displayWord = isEnglishToSpanish ?
+        currentWord.english :
+        currentWord.spanish.split('/')[0]; // Tomar primera traducción para español->inglés
+    document.getElementById('word-container').textContent = displayWord;
+
     document.getElementById('answer-input').value = '';
     document.getElementById('result').textContent = '';
     document.getElementById('answer-input').focus();
@@ -36,7 +42,13 @@ function initGame() {
 
 function checkAnswer() {
     const userAnswer = document.getElementById('answer-input').value.trim().toLowerCase();
-    const correctAnswers = currentWord.spanish.toLowerCase().split('/');
+    let correctAnswers;
+
+    if(isEnglishToSpanish) {
+        correctAnswers = currentWord.spanish.toLowerCase().split('/');
+    } else {
+        correctAnswers = currentWord.english.toLowerCase().split('/');
+    }
 
     if (correctAnswers.includes(userAnswer)) {
         showResult('¡Correcto!', 'correct');
@@ -44,7 +56,10 @@ function checkAnswer() {
         document.getElementById('score').textContent = `Aciertos: ${score}`;
         setTimeout(initGame, 1000);
     } else {
-        showResult(`Incorrecto. La respuesta correcta es: <strong>${currentWord.spanish}</strong>`, 'incorrect');
+        const correctTranslation = isEnglishToSpanish ?
+            currentWord.spanish :
+            currentWord.english;
+        showResult(`Incorrecto. La respuesta correcta es: <strong>${correctTranslation}</strong>`, 'incorrect');
         setTimeout(initGame, 2000);
     }
 }
@@ -53,6 +68,29 @@ function showResult(message, className) {
     const resultElement = document.getElementById('result');
     resultElement.className = className;
     resultElement.innerHTML = message;
+}
+
+function toggleLanguage() {
+    isEnglishToSpanish = !isEnglishToSpanish;
+    const button = document.getElementById('toggle-language');
+    const title = document.querySelector('header p');
+    const input = document.getElementById('answer-input');
+
+    // Actualizar textos
+    if(isEnglishToSpanish) {
+        button.textContent = 'Traducir Español → Inglés';
+        title.textContent = 'Mejora tu vocabulario de inglés a español';
+        input.placeholder = 'Escribe la traducción';
+    } else {
+        button.textContent = 'Traducir Inglés → Español';
+        title.textContent = 'Mejora tu vocabulario de español a inglés';
+        input.placeholder = 'Write the translation';
+    }
+
+    // Reiniciar juego
+    score = 0;
+    document.getElementById('score').textContent = `Aciertos: ${score}`;
+    initGame();
 }
 
 // Manejar la tecla Enter
