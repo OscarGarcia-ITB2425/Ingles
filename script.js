@@ -2,12 +2,15 @@ let words = [];
 let currentWord;
 let score = 0;
 let isEnglishToSpanish = true;
+let isDifficultMode = false;
+let difficultWords = JSON.parse(localStorage.getItem('difficultWords')) || [];
 
 // Función para eliminar acentos
 const normalize = (str) => {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 };
 
+// Cargar el JSON
 fetch('Data/palabras_igles.json')
     .then(response => {
         if (!response.ok) throw new Error('No se pudo cargar el archivo de palabras');
@@ -15,10 +18,14 @@ fetch('Data/palabras_igles.json')
     })
     .then(data => {
         words = data.words;
+        difficultWords = data.difficultWords || [];
+        updateDifficultCounter();
+
         document.getElementById('loading').style.display = 'none';
         document.getElementById('word-container').style.display = 'block';
         document.getElementById('answer-input').style.display = 'block';
         document.querySelector('button').style.display = 'block';
+        document.getElementById('mark-difficult').style.display = 'inline-block';
         initGame();
     })
     .catch(error => {
@@ -26,10 +33,17 @@ fetch('Data/palabras_igles.json')
     });
 
 function initGame() {
-    if (words.length === 0) return;
+    let wordList = isDifficultMode ? difficultWords : words;
 
-    const randomIndex = Math.floor(Math.random() * words.length);
-    currentWord = words[randomIndex];
+    if(wordList.length === 0) {
+        showResult(isDifficultMode
+            ? '¡No hay palabras difíciles guardadas!'
+            : '¡No se encontraron palabras!', 'incorrect');
+        return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * wordList.length);
+    currentWord = wordList[randomIndex];
 
     const displayWord = isEnglishToSpanish ?
         currentWord.english :
@@ -68,7 +82,6 @@ function checkAnswer() {
     }
 }
 
-// Resto del código se mantiene igual...
 function showResult(message, className) {
     const resultElement = document.getElementById('result');
     resultElement.className = className;
@@ -96,6 +109,74 @@ function toggleLanguage() {
     initGame();
 }
 
+// Funcionalidad de palabras difíciles
+function markAsDifficult() {
+    if(!difficultWords.some(word => word.english === currentWord.english)) {
+        difficultWords.push(currentWord);
+        localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
+        updateDifficultCounter();
+        showResult('⭐ Palabra marcada como difícil', 'correct');
+    } else {
+        showResult('ℹ️ Esta palabra ya está en difíciles', 'correct');
+    }
+}
+
+function toggleDifficultMode() {
+    isDifficultMode = !isDifficultMode;
+    const btn = document.getElementById('difficult-mode-btn');
+    const wordContainer = document.getElementById('word-container');
+
+    if(isDifficultMode) {
+        btn.textContent = 'Modo Dificultades';
+        wordContainer.classList.add('difficult-mode-active');
+    } else {
+        btn.textContent = 'Modo Normal';
+        wordContainer.classList.remove('difficult-mode-active');
+    }
+
+    score = 0;
+    document.getElementById('score').textContent = `Aciertos: ${score}`;
+    initGame();
+}
+
+function updateDifficultCounter() {
+    const counter = document.getElementById('difficult-counter') || createDifficultCounter();
+    counter.textContent = `Palabras difíciles: ${difficultWords.length}`;
+    localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
+}
+
+function createDifficultCounter() {
+    const counter = document.createElement('div');
+    counter.id = 'difficult-counter';
+    counter.className = 'difficult-counter';
+    document.body.appendChild(counter);
+    return counter;
+}
+
+// Event listeners
 document.getElementById('answer-input').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') checkAnswer();
 });
+
+// Funciones de gestión avanzada (opcionales)
+function removeDifficultWord(wordToRemove) {
+    difficultWords = difficultWords.filter(word => word.english !== wordToRemove.english);
+    localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
+    updateDifficultCounter();
+    if(isDifficultMode) initGame();
+}
+
+window.manageDifficultWords = {
+    list: () => difficultWords,
+    add: (word) => difficultWords.push(word),
+    clear: () => {
+        difficultWords = [];
+        localStorage.removeItem('difficultWords');
+        updateDifficultCounter();
+    },
+    remove: (englishWord) => {
+        difficultWords = difficultWords.filter(word => word.english !== englishWord);
+        localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
+        updateDifficultCounter();
+    }
+};
