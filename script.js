@@ -1,14 +1,16 @@
 let words = [];
 let currentWord;
 let score = 0;
-let isEnglishToSpanish = true; // Estado del modo de traducción
+let isEnglishToSpanish = true;
 
-// Cargar el JSON desde la carpeta Data
+// Función para eliminar acentos
+const normalize = (str) => {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+};
+
 fetch('Data/palabras_igles.json')
     .then(response => {
-        if (!response.ok) {
-            throw new Error('No se pudo cargar el archivo de palabras');
-        }
+        if (!response.ok) throw new Error('No se pudo cargar el archivo de palabras');
         return response.json();
     })
     .then(data => {
@@ -29,10 +31,9 @@ function initGame() {
     const randomIndex = Math.floor(Math.random() * words.length);
     currentWord = words[randomIndex];
 
-    // Mostrar palabra según el modo seleccionado
     const displayWord = isEnglishToSpanish ?
         currentWord.english :
-        currentWord.spanish.split('/')[0]; // Tomar primera traducción para español->inglés
+        currentWord.spanish.split('/')[0];
     document.getElementById('word-container').textContent = displayWord;
 
     document.getElementById('answer-input').value = '';
@@ -45,25 +46,29 @@ function checkAnswer() {
     let correctAnswers;
 
     if(isEnglishToSpanish) {
-        correctAnswers = currentWord.spanish.toLowerCase().split('/');
+        correctAnswers = currentWord.spanish.toLowerCase().split('/')
+            .map(word => normalize(word));
     } else {
-        correctAnswers = currentWord.english.toLowerCase().split('/');
+        correctAnswers = currentWord.english.toLowerCase().split('/')
+            .map(word => normalize(word));
     }
 
-    if (correctAnswers.includes(userAnswer)) {
+    const normalizedUserAnswer = normalize(userAnswer);
+
+    if (correctAnswers.includes(normalizedUserAnswer)) {
         showResult('¡Correcto!', 'correct');
         score++;
         document.getElementById('score').textContent = `Aciertos: ${score}`;
         setTimeout(initGame, 1000);
     } else {
         const correctTranslation = isEnglishToSpanish ?
-            currentWord.spanish :
-            currentWord.english;
+            currentWord.spanish : currentWord.english;
         showResult(`Incorrecto. La respuesta correcta es: <strong>${correctTranslation}</strong>`, 'incorrect');
         setTimeout(initGame, 2000);
     }
 }
 
+// Resto del código se mantiene igual...
 function showResult(message, className) {
     const resultElement = document.getElementById('result');
     resultElement.className = className;
@@ -76,7 +81,6 @@ function toggleLanguage() {
     const title = document.querySelector('header p');
     const input = document.getElementById('answer-input');
 
-    // Actualizar textos
     if(isEnglishToSpanish) {
         button.textContent = 'Traducir Español → Inglés';
         title.textContent = 'Mejora tu vocabulario de inglés a español';
@@ -87,15 +91,11 @@ function toggleLanguage() {
         input.placeholder = 'Write the translation';
     }
 
-    // Reiniciar juego
     score = 0;
     document.getElementById('score').textContent = `Aciertos: ${score}`;
     initGame();
 }
 
-// Manejar la tecla Enter
 document.getElementById('answer-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        checkAnswer();
-    }
+    if (e.key === 'Enter') checkAnswer();
 });
