@@ -223,3 +223,33 @@ footer p {
         width: 100%;
     }
 }
+
+.difficult-words-controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: center;
+}
+
+#mark-difficult {
+    background-color: #ffd700;
+    color: var(--dark-blue);
+}
+
+#mark-difficult:hover {
+    background-color: #ffcc00;
+}
+
+.difficult-mode-active {
+    border: 2px solid #ffd700 !important;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.difficult-counter {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255, 215, 0, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+}

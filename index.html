@@ -26,7 +26,11 @@
                 <input type="text" id="answer-input" placeholder="Escribe la traducción" style="display: none;">
                 <button onclick="checkAnswer()" style="display: none;">Comprobar</button>
             </div>
-
+            <!-- Añadir después del botón "Comprobar" -->
+            <div class="difficult-words-controls">
+                <button onclick="toggleDifficultMode()" id="difficult-mode-btn">Modo Normal</button>
+                <button onclick="markAsDifficult()" id="mark-difficult">⭐ Marcar como difícil</button>
+            </div>
             <div id="result"></div>
             <div id="score">Aciertos: 0</div>
         </section>
