@@ -290,3 +290,28 @@ footer p {
     background: rgba(0, 0, 0, 0.5);
     z-index: 999;
 }
+
+.learned-counter {
+    position: fixed;
+    bottom: 60px;
+    right: 20px;
+    background: rgba(76, 217, 100, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    color: #4cd964;
+}
+
+.learned-controls {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+#reset-learned {
+    background-color: #4cd964;
+    color: var(--dark-blue);
+    margin-top: 0.5rem;
+}
+
+#reset-learned:hover {
+    background-color: #3db34d;
+}

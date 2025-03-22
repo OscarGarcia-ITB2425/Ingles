@@ -4,6 +4,7 @@ let score = 0;
 let isEnglishToSpanish = true;
 let isDifficultMode = false;
 let difficultWords = JSON.parse(localStorage.getItem('difficultWords')) || [];
+let learnedWords = JSON.parse(localStorage.getItem('learnedWords')) || [];
 
 // Función para normalizar texto (quitar acentos)
 const normalize = (str) => {
@@ -20,6 +21,7 @@ fetch('Data/palabras_igles.json')
         words = data.words;
         difficultWords = data.difficultWords || [];
         updateDifficultCounter();
+        updateLearnedCounter();
 
         document.getElementById('loading').style.display = 'none';
         document.getElementById('word-container').style.display = 'block';
@@ -34,6 +36,7 @@ fetch('Data/palabras_igles.json')
 
 function initGame() {
     let wordList = isDifficultMode ? difficultWords : words;
+    wordList = wordList.filter(word => !learnedWords.some(learned => learned.english === word.english));
 
     if(wordList.length === 0) {
         showResult(isDifficultMode
@@ -73,6 +76,12 @@ function checkAnswer() {
         showResult('¡Correcto!', 'correct');
         score++;
         document.getElementById('score').textContent = `Aciertos: ${score}`;
+
+        // Mover la palabra a learnedWords y guardar en localStorage
+        learnedWords.push(currentWord);
+        localStorage.setItem('learnedWords', JSON.stringify(learnedWords));
+        updateLearnedCounter();
+
         setTimeout(initGame, 1000);
     } else {
         const correctTranslation = isEnglishToSpanish ?
@@ -195,6 +204,20 @@ function createDifficultCounter() {
     const counter = document.createElement('div');
     counter.id = 'difficult-counter';
     counter.className = 'difficult-counter';
+    document.body.appendChild(counter);
+    return counter;
+}
+
+function updateLearnedCounter() {
+    const counter = document.getElementById('learned-counter') || createLearnedCounter();
+    counter.textContent = `Palabras aprendidas: ${learnedWords.length}`;
+    localStorage.setItem('learnedWords', JSON.stringify(learnedWords));
+}
+
+function createLearnedCounter() {
+    const counter = document.createElement('div');
+    counter.id = 'learned-counter';
+    counter.className = 'learned-counter';
     document.body.appendChild(counter);
     return counter;
 }
