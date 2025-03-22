@@ -27,10 +27,13 @@
                 <button onclick="checkAnswer()" style="display: none;">Comprobar</button>
             </div>
             <!-- Añadir después del botón "Comprobar" -->
+            <!-- Modificar el div .difficult-words-controls -->
             <div class="difficult-words-controls">
                 <button onclick="toggleDifficultMode()" id="difficult-mode-btn">Modo Normal</button>
-                <button onclick="markAsDifficult()" id="mark-difficult">⭐ Marcar como difícil</button>
+                <button onclick="markAsDifficult()" id="mark-difficult">⭐ Marcar</button>
+                <button onclick="confirmClearDifficult()" id="clear-difficult">🗑️ Vaciar</button>
             </div>
+
             <div id="result"></div>
             <div id="score">Aciertos: 0</div>
         </section>

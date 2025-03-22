@@ -253,3 +253,40 @@ footer p {
     padding: 0.5rem 1rem;
     border-radius: 20px;
 }
+
+#clear-difficult {
+    background-color: #ff4444;
+    color: white;
+}
+
+#clear-difficult:hover {
+    background-color: #cc0000;
+}
+
+.confirmation-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--dark-blue);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    z-index: 1000;
+    text-align: center;
+}
+
+.confirmation-dialog button {
+    margin: 0.5rem;
+    padding: 0.5rem 1rem;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}

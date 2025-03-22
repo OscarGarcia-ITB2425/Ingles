@@ -5,12 +5,12 @@ let isEnglishToSpanish = true;
 let isDifficultMode = false;
 let difficultWords = JSON.parse(localStorage.getItem('difficultWords')) || [];
 
-// Función para eliminar acentos
+// Función para normalizar texto (quitar acentos)
 const normalize = (str) => {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 };
 
-// Cargar el JSON
+// Cargar palabras iniciales
 fetch('Data/palabras_igles.json')
     .then(response => {
         if (!response.ok) throw new Error('No se pudo cargar el archivo de palabras');
@@ -109,7 +109,7 @@ function toggleLanguage() {
     initGame();
 }
 
-// Funcionalidad de palabras difíciles
+// Sistema de palabras difíciles
 function markAsDifficult() {
     if(!difficultWords.some(word => word.english === currentWord.english)) {
         difficultWords.push(currentWord);
@@ -126,6 +126,12 @@ function toggleDifficultMode() {
     const btn = document.getElementById('difficult-mode-btn');
     const wordContainer = document.getElementById('word-container');
 
+    if (isDifficultMode && difficultWords.length === 0) {
+        showResult('⚠️ Primero marca algunas palabras como difíciles', 'incorrect');
+        isDifficultMode = false;
+        return;
+    }
+
     if(isDifficultMode) {
         btn.textContent = 'Modo Dificultades';
         wordContainer.classList.add('difficult-mode-active');
@@ -139,10 +145,50 @@ function toggleDifficultMode() {
     initGame();
 }
 
+function confirmClearDifficult() {
+    if (difficultWords.length === 0) {
+        showResult('ℹ️ No hay palabras difíciles guardadas', 'correct');
+        return;
+    }
+
+    const dialog = document.createElement('div');
+    dialog.className = 'confirmation-dialog';
+    dialog.innerHTML = `
+        <p>¿Estás seguro de querer eliminar todas<br>(${difficultWords.length}) palabras difíciles?</p>
+        <button onclick="clearDifficultWords(true)" class="confirm-btn">Sí, eliminar</button>
+        <button onclick="clearDifficultWords(false)" class="cancel-btn">Cancelar</button>
+    `;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(dialog);
+}
+
+function clearDifficultWords(confirmed) {
+    document.querySelector('.confirmation-dialog')?.remove();
+    document.querySelector('.overlay')?.remove();
+
+    if (confirmed) {
+        difficultWords = [];
+        localStorage.removeItem('difficultWords');
+        updateDifficultCounter();
+
+        if (isDifficultMode) {
+            toggleDifficultMode();
+            showResult('♻️ Modo difícil desactivado - Lista vaciada', 'correct');
+        } else {
+            showResult('✅ Lista de difíciles vaciada', 'correct');
+        }
+    }
+}
+
 function updateDifficultCounter() {
     const counter = document.getElementById('difficult-counter') || createDifficultCounter();
     counter.textContent = `Palabras difíciles: ${difficultWords.length}`;
     localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
+    document.getElementById('clear-difficult').disabled = difficultWords.length === 0;
 }
 
 function createDifficultCounter() {
@@ -158,22 +204,11 @@ document.getElementById('answer-input').addEventListener('keypress', function(e)
     if (e.key === 'Enter') checkAnswer();
 });
 
-// Funciones de gestión avanzada (opcionales)
-function removeDifficultWord(wordToRemove) {
-    difficultWords = difficultWords.filter(word => word.english !== wordToRemove.english);
-    localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
-    updateDifficultCounter();
-    if(isDifficultMode) initGame();
-}
-
+// Funciones de depuración (opcional)
 window.manageDifficultWords = {
     list: () => difficultWords,
     add: (word) => difficultWords.push(word),
-    clear: () => {
-        difficultWords = [];
-        localStorage.removeItem('difficultWords');
-        updateDifficultCounter();
-    },
+    clear: () => clearDifficultWords(true),
     remove: (englishWord) => {
         difficultWords = difficultWords.filter(word => word.english !== englishWord);
         localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
