@@ -38,7 +38,7 @@ function initGame() {
     let wordList = isDifficultMode ? difficultWords : words;
     wordList = wordList.filter(word => !learnedWords.some(learned => learned.english === word.english));
 
-    if(wordList.length === 0) {
+    if (wordList.length === 0) {
         showResult(isDifficultMode
             ? '¡No hay palabras difíciles guardadas!'
             : '¡No se encontraron palabras!', 'incorrect');
@@ -60,9 +60,14 @@ function initGame() {
 
 function checkAnswer() {
     const userAnswer = document.getElementById('answer-input').value.trim().toLowerCase();
+    const wordContainer = document.getElementById('word-container');
+
+    // Remover clases previas
+    wordContainer.classList.remove('correct-border', 'incorrect-border');
+
     let correctAnswers;
 
-    if(isEnglishToSpanish) {
+    if (isEnglishToSpanish) {
         correctAnswers = currentWord.spanish.toLowerCase().split('/')
             .map(word => normalize(word));
     } else {
@@ -77,6 +82,9 @@ function checkAnswer() {
         score++;
         document.getElementById('score').textContent = `Aciertos: ${score}`;
 
+        // Añadir borde verde
+        wordContainer.classList.add('correct-border');
+
         // Mover la palabra a learnedWords y guardar en localStorage
         learnedWords.push(currentWord);
         localStorage.setItem('learnedWords', JSON.stringify(learnedWords));
@@ -87,6 +95,10 @@ function checkAnswer() {
         const correctTranslation = isEnglishToSpanish ?
             currentWord.spanish : currentWord.english;
         showResult(`Incorrecto. La respuesta correcta es: <strong>${correctTranslation}</strong>`, 'incorrect');
+
+        // Añadir borde rojo
+        wordContainer.classList.add('incorrect-border');
+
         setTimeout(initGame, 2000);
     }
 }
@@ -103,7 +115,7 @@ function toggleLanguage() {
     const title = document.querySelector('header p');
     const input = document.getElementById('answer-input');
 
-    if(isEnglishToSpanish) {
+    if (isEnglishToSpanish) {
         button.textContent = 'Traducir Español → Inglés';
         title.textContent = 'Mejora tu vocabulario de inglés a español';
         input.placeholder = 'Escribe la traducción';
@@ -120,7 +132,7 @@ function toggleLanguage() {
 
 // Sistema de palabras difíciles
 function markAsDifficult() {
-    if(!difficultWords.some(word => word.english === currentWord.english)) {
+    if (!difficultWords.some(word => word.english === currentWord.english)) {
         difficultWords.push(currentWord);
         localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
         updateDifficultCounter();
@@ -141,7 +153,7 @@ function toggleDifficultMode() {
         return;
     }
 
-    if(isDifficultMode) {
+    if (isDifficultMode) {
         btn.textContent = 'Modo Dificultades';
         wordContainer.classList.add('difficult-mode-active');
     } else {
@@ -223,7 +235,7 @@ function createLearnedCounter() {
 }
 
 // Event listeners
-document.getElementById('answer-input').addEventListener('keypress', function(e) {
+document.getElementById('answer-input').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') checkAnswer();
 });
 

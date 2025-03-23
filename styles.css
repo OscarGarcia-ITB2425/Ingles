@@ -315,3 +315,12 @@ footer p {
 #reset-learned:hover {
     background-color: #3db34d;
 }
+
+/* Añadir al final del archivo */
+#word-container.correct-border {
+    border: 3px solid var(--success);
+}
+
+#word-container.incorrect-border {
+    border: 3px solid var(--error);
+}
