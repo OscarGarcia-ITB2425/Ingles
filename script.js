@@ -5,6 +5,7 @@ let isEnglishToSpanish = true;
 let isDifficultMode = false;
 let difficultWords = JSON.parse(localStorage.getItem('difficultWords')) || [];
 let learnedWords = JSON.parse(localStorage.getItem('learnedWords')) || [];
+let selectedLetter = '';
 
 // Función para normalizar texto (quitar acentos)
 const normalize = (str) => {
@@ -37,6 +38,10 @@ fetch('Data/palabras_igles.json')
 function initGame() {
     let wordList = isDifficultMode ? difficultWords : words;
     wordList = wordList.filter(word => !learnedWords.some(learned => learned.english === word.english));
+
+    if (selectedLetter) {
+        wordList = wordList.filter(word => word.english.toLowerCase().startsWith(selectedLetter));
+    }
 
     if (wordList.length === 0) {
         showResult(isDifficultMode
@@ -250,3 +255,8 @@ window.manageDifficultWords = {
         updateDifficultCounter();
     }
 };
+
+function filterWordsByLetter() {
+    selectedLetter = document.getElementById('letter-select').value.toLowerCase();
+    initGame();
+}
