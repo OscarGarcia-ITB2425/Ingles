@@ -3,9 +3,28 @@ let currentWord;
 let score = 0;
 let isEnglishToSpanish = true;
 let isDifficultMode = false;
-let difficultWords = JSON.parse(localStorage.getItem('difficultWords')) || [];
-let learnedWords = JSON.parse(localStorage.getItem('learnedWords')) || [];
 let selectedLetter = '';
+
+function isLocalStorageAvailable() {
+    try {
+        const test = '__localStorageTest__';
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+let difficultWords = [];
+let learnedWords = [];
+
+if (isLocalStorageAvailable()) {
+    difficultWords = JSON.parse(localStorage.getItem('difficultWords')) || [];
+    learnedWords = JSON.parse(localStorage.getItem('learnedWords')) || [];
+} else {
+    console.warn('localStorage no está disponible. Los datos no se guardarán entre sesiones.');
+}
 
 // Función para normalizar texto (quitar acentos)
 const normalize = (str) => {
@@ -92,7 +111,9 @@ function checkAnswer() {
 
         // Mover la palabra a learnedWords y guardar en localStorage
         learnedWords.push(currentWord);
-        localStorage.setItem('learnedWords', JSON.stringify(learnedWords));
+        if (isLocalStorageAvailable()) {
+            localStorage.setItem('learnedWords', JSON.stringify(learnedWords));
+        }
         updateLearnedCounter();
 
         setTimeout(initGame, 1000);
@@ -139,7 +160,9 @@ function toggleLanguage() {
 function markAsDifficult() {
     if (!difficultWords.some(word => word.english === currentWord.english)) {
         difficultWords.push(currentWord);
-        localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
+        if (isLocalStorageAvailable()) {
+            localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
+        }
         updateDifficultCounter();
         showResult('⭐ Palabra marcada como difícil', 'correct');
     } else {
@@ -198,7 +221,9 @@ function clearDifficultWords(confirmed) {
 
     if (confirmed) {
         difficultWords = [];
-        localStorage.removeItem('difficultWords');
+        if (isLocalStorageAvailable()) {
+            localStorage.removeItem('difficultWords');
+        }
         updateDifficultCounter();
 
         if (isDifficultMode) {
@@ -213,7 +238,9 @@ function clearDifficultWords(confirmed) {
 function updateDifficultCounter() {
     const counter = document.getElementById('difficult-counter') || createDifficultCounter();
     counter.textContent = `Palabras difíciles: ${difficultWords.length}`;
-    localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
+    if (isLocalStorageAvailable()) {
+        localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
+    }
     document.getElementById('clear-difficult').disabled = difficultWords.length === 0;
 }
 
@@ -228,7 +255,9 @@ function createDifficultCounter() {
 function updateLearnedCounter() {
     const counter = document.getElementById('learned-counter') || createLearnedCounter();
     counter.textContent = `Palabras aprendidas: ${learnedWords.length}`;
-    localStorage.setItem('learnedWords', JSON.stringify(learnedWords));
+    if (isLocalStorageAvailable()) {
+        localStorage.setItem('learnedWords', JSON.stringify(learnedWords));
+    }
 }
 
 function createLearnedCounter() {
@@ -251,7 +280,9 @@ window.manageDifficultWords = {
     clear: () => clearDifficultWords(true),
     remove: (englishWord) => {
         difficultWords = difficultWords.filter(word => word.english !== englishWord);
-        localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
+        if (isLocalStorageAvailable()) {
+            localStorage.setItem('difficultWords', JSON.stringify(difficultWords));
+        }
         updateDifficultCounter();
     }
 };
